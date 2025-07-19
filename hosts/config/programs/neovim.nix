@@ -5,6 +5,9 @@
 
     settings = {
       vim = {
+
+        options.tabstop = 2;
+
         viAlias = true;
         vimAlias = true;
 
@@ -42,7 +45,7 @@
           enableExtraDiagnostics = true;
 
           # Languages that will be supported in default and maximal configurations.
-          nix.enable = false;
+          nix.enable = true;
           markdown.enable = true;
           python.enable = true;
           assembly.enable = true;

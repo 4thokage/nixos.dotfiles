@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   services.mpd = {
     enable = true;
-    musicDirectory = "/home/jsr/music";
+    musicDirectory = "/home/jsr/Music";
     extraConfig = ''
       audio_output {
         type "pipewire"

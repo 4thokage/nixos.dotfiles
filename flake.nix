@@ -35,5 +35,10 @@
       url = "github:anyrun-org/anyrun";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    
+    devkitnix = {
+      url = "github:knarkzel/devkitnix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }
