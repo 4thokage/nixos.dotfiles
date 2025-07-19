@@ -1,0 +1,72 @@
+{
+  inputs,
+  self,
+  ...
+}: {
+  flake.nixosConfigurations = let
+    inherit (inputs.nixpkgs) lib;
+    inherit (lib) nixosSystem;
+    inherit (lib.attrsets) recursiveUpdate;
+    inherit (lib.lists) concatLists flatten singleton;
+
+    # Core modules from external inputs
+    nixosModules = [
+      inputs.home-manager.nixosModules.default
+      inputs.stylix.nixosModules.stylix
+      inputs.nvf.nixosModules.default
+    ];
+
+    # Path to the home-manager module directory
+    homeModules = self + /home;
+
+    # Common configuration shared across all systems
+    sharedConfig = [
+      ./config/nix
+      ./config/programs
+      ./config/security
+      ./config/services
+      ./config/shell
+      ./config/system
+    ];
+
+    # Function to create a NixOS configuration for a specific hostname and system
+    # Arguments:
+    #  - hostname: The hostname of the system
+    #  - system: The system architecture
+    #  - modules (optional): Additional modules to include
+    #  - specialArgs (optional): Additional special arguments passed to the system
+    mkNixosSystem = {
+      hostname,
+      system,
+      ...
+    } @ args:
+      nixosSystem {
+        modules =
+          concatLists [
+            (singleton {
+              networking.hostName = args.hostname;
+              nixpkgs.hostPlatform = args.system;
+            })
+
+            (flatten (
+              concatLists [
+                (singleton ./${args.hostname})
+                (args.modules or [])
+              ]
+            ))
+          ]
+          ++ sharedConfig;
+
+        specialArgs = recursiveUpdate {
+          inherit inputs self;
+        } (args.specialArgs or {});
+      };
+  in {
+    # Thinkpad x230
+    styx = mkNixosSystem {
+      hostname = "styx";
+      system = "x86_64-linux";
+      modules = [nixosModules homeModules];
+    };
+  };
+}
