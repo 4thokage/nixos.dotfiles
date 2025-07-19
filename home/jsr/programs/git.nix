@@ -22,6 +22,7 @@
 
     extraConfig = {
       credential.helper = "${pkgs.gitFull}/bin/git-credential-libsecret";
+      credential.credentialStore = "secretservice";
 
       init.defaultBranch = "main";
       branch.autosetupmerge = "true";
